@@ -1,8 +1,6 @@
 import requests, feedparser, json
 from config_info import APIS
 
-url = 'http://export.arxiv.org/api/query?search_query=all:electron&start=0&max_results=1'
-headers = {"User-Agent": "python-requests"}
 """
 User-Agent	Identifie le client (navigateur, script Python, etc.)
 Accept	Indique les formats de réponse acceptés (application/json, etc.)
@@ -65,3 +63,4 @@ raw_result3 = fetch_raw(APIS["HAL"]["api_url"].format(query="AI agent",quantity=
 
 # result = fetch_results(APIS["arXiv"],"AI agent")
 print(raw_result3)
+print(APIS["HAL"]["api_url"].format(query="AI agent",quantity='2'))
