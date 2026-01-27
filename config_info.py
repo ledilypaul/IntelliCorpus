@@ -5,7 +5,6 @@ APIS = {
     },
     "HAL": {
         "api_url": "https://api.archives-ouvertes.fr/search/?q={query}&rows={quantity}&wt=json&fl=docid,id_hal_s,uri_s,title_s,abstract_s,authFullName_s,publicationDate_s,doi_s,files_s,docType_s,journalTitle_s",
-        
         "api_available": True
     },
     "PubMed": {
