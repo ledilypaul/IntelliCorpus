@@ -12,13 +12,14 @@ APIS = {
         "api_available": True
     },
     "Semantic Scholar": {
-        "api_url": "https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit=5",
-        "api_available": True
+        "api_url": "https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit={quantity}",
+        "api_available": True,
+        "paper_url" : "https://api.semanticscholar.org/graph/v1/paper/{paper_id}"
     },
     "Google Scholar": {
         "url": "https://scholar.google.com/scholar?q={query}",
         "api_available": False,
-        "warning": "⚠️ CAPTCHA fréquent, scraping déconseillé"
+        "warning": "⚠️ CAPTCHA fréquent, scraping déconseillé",
     },
     "IEEE Xplore": {
         "api_url": "https://ieeexploreapi.ieee.org/api/v1/search/articles?queryText={query}&apikey={apikey}",
@@ -29,10 +30,5 @@ APIS = {
         "api_url": "https://api.core.ac.uk/v3/search/works?q={query}",
         "api_available": True,
         "requires_api_key": True
-    },
-    "ResearchGate": {
-        "url": "https://www.researchgate.net/search/publication?q={query}",
-        "api_available": False,
-        "warning": "⚠️ Protection anti-bot très forte"
     }
 }
