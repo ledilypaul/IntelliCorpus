@@ -51,3 +51,31 @@ Si tu veux pousser plus loin :
                   │  Base finale    │
                   │  + Embeddings   │
                   └─────────────────┘
+
+
+mon_projet_recherche/
+├── .env                     # Tes identifiants (Postgres, Neo4j, clés API)
+├── requirements.txt         # Tes bibliothèques (sqlalchemy, polars, requests...)
+│
+├── config/
+│   └── database.py          # Ton fichier de connexion (get_db_engine)
+│
+├── models/
+│   └── postgres_schemas.py  # La définition de ta table (document_table)
+│
+├── scrapers/
+│   ├── arxiv.py             # Fonction de scraping arXiv
+│   ├── hal.py               # Fonction de scraping HAL
+│   └── pubmed.py            # Fonction de scraping PubMed
+│
+├── processing/
+│   └── cleaner.py           # Tes fonctions Polars pour nettoyer/dédupliquer
+│
+├── database/
+│   └── crud.py              # Ta fameuse fonction upsert_data !
+│
+├── ai_pipeline/             # (Pour plus tard)
+│   ├── chunking.py          
+│   └── embeddings.py        
+│
+└── main_pipeline.py         # Le chef d'orchestre qui relie tout
