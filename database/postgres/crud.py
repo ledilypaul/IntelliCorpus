@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, String, Text, DateTime, MetaData, JSON
-from sqlalchemy import insert
+from sqlalchemy.dialects.postgresql import insert
 
-def upsert_data(data : list[dict], index_elements, table : Table, engine):
+def upsert_data(data : list[dict], index_elements : list[str], table : Table, engine):
     with engine.begin() as conn:
         #Insertion query for PostgresSQL
         stmt = insert(table).values(data)
@@ -9,7 +9,8 @@ def upsert_data(data : list[dict], index_elements, table : Table, engine):
         # On crée un dictionnaire qui dit : "Pour chaque colonne (sauf l'id), 
         # prends la nouvelle valeur qui a été 'exclue' et mets la à jour."
         update_dict = {
-            col.name for col in stmt.excluded if col.name not in index_elements
+            col.name: getattr(stmt.excluded, col.name) #Pour créer des paires clé/valeur 
+            for col in stmt.excluded if col.name not in index_elements
         }
 
         if update_dict:
