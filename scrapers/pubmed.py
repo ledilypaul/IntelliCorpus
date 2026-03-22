@@ -87,7 +87,7 @@ def fetch_pubmed(query: str, max_results: int = 200, batch_size: int = 100, dela
 
     results_xml = []
 
-    for start in range(0, min(count, max_results), batch_size):
+    for _ in range(0, min(count, max_results), batch_size):
         xml = pubmed_fetch(
             webenv=webenv,
             query_key=query_key,
@@ -97,12 +97,43 @@ def fetch_pubmed(query: str, max_results: int = 200, batch_size: int = 100, dela
         )
         results_xml.append(xml)
         time.sleep(delay)  # respect NCBI rate-limit
-        # pprint(xml)
     return results_xml
 
-from pprint import pprint
+def get_authors(authors_list):
+    final_list = []
+    authors = authors_list.get("Author",{})
+    for author in authors:
+        forename = author.get("ForeName", "").strip()
+        lastname = author.get("LastName", "").strip()
+        if forename or lastname:
+            name = f'{forename} {lastname}'.strip()
+            final_list.append(name)
+    return final_list
+
 def format_hal_data(results):
+    return_list = []
     for result in results:
         parsed_dict = xmltodict.parse(result, dict_constructor=dict)
-        print("yolo")
-        pprint(parsed_dict)
+        articles = parsed_dict.get("PubmedArticleSet", {}).get("PubmedArticle", [])
+        if isinstance(articles, dict):
+                articles = [articles]
+        for article in articles:
+                citation = article.get("MedlineCitation", {})
+                article_info = citation.get("Article", {})
+                pmid = citation.get("PMID", {}).get("#text")
+                title = article_info.get("ArticleTitle")
+                summary = article_info.get("Abstract", {}).get("AbstractText") 
+                published_at = citation.get("DateCompleted")
+                uri = f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/"
+                author_list = get_authors(article_info.get("AuthorList",{}))
+                article_dict = {
+                "id": uri,                # On utilise l'URI comme ID temporaire (ton cleaner va générer l'UUID)
+                "title": title,
+                "summary": summary,
+                "published_at": published_at,
+                "pdf_url": None,          # PubMed ne donne pas de lien PDF direct ici
+                "source": "PubMed",
+                "authors": author_list
+                }
+                return_list.append(article_dict)
+    return return_list
