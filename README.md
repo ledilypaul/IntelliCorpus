@@ -79,3 +79,47 @@ mon_projet_recherche/
 │   └── embeddings.py        
 │
 └── main_pipeline.py         # Le chef d'orchestre qui relie tout
+
+## Roadmap IntelliCorpus
+
+### Etape 1 — Consolidation
+**Techno :** Python, PostgreSQL, SQLAlchemy, Polars
+- Finaliser les scrapers (arXiv, HAL, PubMed)
+- Ajouter `requirements.txt`
+- Sécuriser le `.env`
+
+### Etape 2 — Pipeline IA & PDFs
+**Techno :** Claude API, pgvector, chunking
+
+```
+PDF → extraction texte → chunking → embeddings → pgvector
+```
+
+- Découper un PDF en chunks intelligents
+- Générer des embeddings et faire de la recherche sémantique
+- Implémenter le pattern RAG (Retrieval-Augmented Generation)
+
+### Etape 3 — Graph DB & Ontologie
+**Techno :** Neo4j, Cypher, RDF/OWL
+
+```
+PostgreSQL → ETL → Neo4j
+Nœuds    : Article, Auteur, Concept, Journal
+Relations : CITE, ÉCRIT_PAR, TRAITE_DE, PUBLIÉ_DANS
+```
+
+- Modéliser des relations complexes (citations, co-auteurs, concepts)
+- Apprendre le langage Cypher
+- Introduction à l'ontologie : classes, propriétés, inférences
+
+### Etape 4 — Orchestration n8n
+**Techno :** n8n, webhooks, cron jobs
+
+```
+Chaque nuit → scrape nouvelles publis → normalise → insère DB
+            → si nouveau concept détecté → enrichit Neo4j → notification
+```
+
+- Construire des workflows visuels
+- Déclencher des pipelines sur événement ou schedule
+- Connecter des services entre eux

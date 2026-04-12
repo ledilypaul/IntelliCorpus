@@ -1,7 +1,6 @@
 
 import requests,time
 from typing import List, Dict
-from IPython.display import JSON
 import xmltodict
 
 EUTILS_BASE = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
@@ -110,7 +109,7 @@ def get_authors(authors_list):
             final_list.append(name)
     return final_list
 
-def format_hal_data(results):
+def format_pubmed_data(results):
     return_list = []
     for result in results:
         parsed_dict = xmltodict.parse(result, dict_constructor=dict)
