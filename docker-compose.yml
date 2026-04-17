@@ -1,38 +1,53 @@
-  services:
-    n8n:
-      image: docker.n8n.io/n8nio/n8n
-      container_name: intellicorpus_n8n
-      ports:
-        - "5678:5678"
-      environment:
-        - GENERIC_TIMEZONE=Europe/Paris
-        - TZ=Europe/Paris
-        - N8N_AUTHENTICATION_DISABLED=true
+services:
+  intellicorpus_db:
+    image: postgres:17
+    container_name: intellicorpus_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      TZ: Europe/Paris
+    ports:
+      - "5433:5432"
+    volumes:
+      - intellicorpus_postgres_data:/var/lib/postgresql/data
 
-        - DB_TYPE=postgresdb
-        - DB_POSTGRESDB_HOST=intellicorpus_postgres
-        - DB_POSTGRESDB_PORT=5432
-        - DB_POSTGRESDB_DATABASE=intellicorpus
-        - DB_POSTGRESDB_USER=intellicorpus_user
-        - DB_POSTGRESDB_PASSWORD=intellicorpus_pwd
-      volumes:
-        - n8n_data:/home/node/.n8n
-      depends_on:
-        - intellicorpus_db
+  intellicorpus_minio:
+    image: minio/minio:RELEASE.2025-10-15T17-29-55Z
+    container_name: intellicorpus_minio
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - intellicorpus_minio_data:/data
 
-    intellicorpus_db:
-      image: postgres:17
-      restart: always
-      environment:
-        POSTGRES_USER: intellicorpus_user
-        POSTGRES_PASSWORD: intellicorpus_pwd
-        POSTGRES_DB: intellicorpus
-        TZ: Europe/Paris
-      ports:
-        - "5433:5432"
-      volumes:
-        - intellicorpus_postgres_data:/var/lib/postgresql/data
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: intellicorpus_n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Europe/Paris
+      - TZ=Europe/Paris
+      - N8N_AUTHENTICATION_DISABLED=true
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=intellicorpus_postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - intellicorpus_db
 
-  volumes:
-    n8n_data:
-    intellicorpus_postgres_data:
+volumes:
+  intellicorpus_postgres_data:
+  intellicorpus_minio_data:
+  n8n_data:

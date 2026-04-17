@@ -64,3 +64,4 @@ urllib3==2.6.3
 uuid==1.30
 wcwidth==0.6.0
 xmltodict==1.0.4
+minio==7.2.15
