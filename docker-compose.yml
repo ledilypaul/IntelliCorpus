@@ -14,7 +14,7 @@ services:
       - intellicorpus_postgres_data:/var/lib/postgresql/data
 
   intellicorpus_minio:
-    image: minio/minio:RELEASE.2025-10-15T17-29-55Z
+    image: minio/minio:latest
     container_name: intellicorpus_minio
     restart: always
     command: server /data --console-address ":9001"

@@ -63,7 +63,6 @@ def normalize_data(
     if not raw_data:
         return []
     df = pl.DataFrame(raw_data)
-    
     df = rename_columns(df, column_mapping)
     df = add_source_columns(df, source_name)
     df = format_date_columns(df, date_columns)
