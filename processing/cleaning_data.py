@@ -1,29 +1,7 @@
-import polars as pl
 import uuid,json,xmltodict
+import polars as pl
 
-def parse_xml_to_json_and_display(xml_string: str) -> dict:
-    """
-    Convertit une chaîne XML en dictionnaire Python (JSON) et l'affiche joliment.
-    """
-    if not xml_string:
-        print("Le XML fourni est vide.")
-        return {}
 
-    # 1. Conversion du XML en Dictionnaire Python
-    # dict_constructor=dict permet d'avoir des dictionnaires standards
-    parsed_dict = xmltodict.parse(xml_string, dict_constructor=dict)
-    
-    # 2. Le "Beau Rendu" (Pretty Print)
-    # indent=4 crée de belles indentations pour lire facilement la structure
-    # ensure_ascii=False permet de bien afficher les accents français (é, à, etc.)
-    json_formate = json.dumps(parsed_dict, indent=4, ensure_ascii=False)
-    
-    print("--- 🌟 Aperçu des données extraites ---")
-    print(json_formate)
-    print("--------------------------------------")
-    
-    # 3. On retourne le dictionnaire pour la suite du pipeline
-    return parsed_dict
 def rename_columns(df: pl.DataFrame, mapping: dict) -> pl.DataFrame:
     if mapping:
         columns_to_rename = {k: v for k, v in mapping.items() if k in df.columns}
@@ -32,7 +10,7 @@ def rename_columns(df: pl.DataFrame, mapping: dict) -> pl.DataFrame:
 
 def add_source_columns(df: pl.DataFrame, source_name: str) -> pl.DataFrame:
     if "source" not in df.columns:
-        return df.with_columns(pl.list(source_name).alias("source"))
+        return df.with_columns(pl.lit(source_name).alias("source"))
     return df
 
 def format_date_columns(df: pl.DataFrame, date_columns: list[str]) -> pl.DataFrame:
