@@ -10,11 +10,11 @@ load_dotenv()
 class DBConfig:
     """Centralise la configuration et la validation."""
     def __init__(self):
-        self.user = os.getenv('DB_USER')
-        self.password = os.getenv('DB_PASSWORD')
-        self.host = os.getenv('DB_HOST')
-        self.port = os.getenv('DB_PORT')
-        self.name = os.getenv('DB_NAME')
+        self.user = os.getenv('POSTGRES_USER')
+        self.password = os.getenv('POSTGRES_PASSWORD')
+        self.host = os.getenv('POSTGRES_HOST')
+        self.port = os.getenv('POSTGRES_PORT')
+        self.name = os.getenv('POSTGRES_DB')
         self.validate()
 
     def validate(self):

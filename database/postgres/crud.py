@@ -1,4 +1,6 @@
-from sqlalchemy import Table, Column, String, Text, DateTime, MetaData, JSON
+from datetime import datetime, timezone
+
+from sqlalchemy import Table, Column, String, Text, DateTime, MetaData, JSON, select, update
 from sqlalchemy.dialects.postgresql import insert
 
 def upsert_data(data : list[dict], index_elements : list[str], table : Table, engine):
@@ -23,3 +25,24 @@ def upsert_data(data : list[dict], index_elements : list[str], table : Table, en
         
         conn.execute(stmt)
         print(f"{len(data)} succesfuly treated inside table {table}")
+
+
+def get_articles_without_pdf(engine, table: Table) -> list[dict]:
+    with engine.connect() as conn:
+        stmt = select(table).where(
+            table.c.minio_path == None,
+            table.c.pdf_url != None,
+            table.c.pdf_status == "pending"
+        )
+        return conn.execute(stmt).mappings().all()
+
+
+def update_pdf_fields(engine, table: Table, article_id: str, minio_path: str | None, pdf_status: str, pdf_size_bytes: int = None) -> None:
+    with engine.begin() as conn:
+        stmt = update(table).where(table.c.id == article_id).values(
+            minio_path=minio_path,
+            pdf_status=pdf_status,
+            pdf_downloaded_at=datetime.now(timezone.utc),
+            pdf_size_bytes=pdf_size_bytes,
+        )
+        conn.execute(stmt)

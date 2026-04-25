@@ -1,4 +1,4 @@
-import uuid,json,xmltodict
+import uuid
 import polars as pl
 
 
@@ -15,17 +15,17 @@ def add_source_columns(df: pl.DataFrame, source_name: str) -> pl.DataFrame:
 
 def format_date_columns(df: pl.DataFrame, date_columns: list[str]) -> pl.DataFrame:
     if date_columns:
-        for col_names in date_columns:
-            if col_names in df.columns:
-                df = df.with_columns(pl.col(col_names).cast(pl.Date, strict=False))
+        for col_name in date_columns:
+            if col_name in df.columns:
+                df = df.with_columns(
+                    pl.col(col_name).str.to_datetime(strict=False, time_unit="us").alias(col_name)
+                )
     return df
 
 def column_to_drop(df: pl.DataFrame, target_columns: list[str]) -> pl.DataFrame:
     if target_columns:
         df = df.drop(target_columns)
     return df
-
-import uuid
 
 def generate_deterministic_uuid(df: pl.DataFrame, url_column: str = "id") -> pl.DataFrame:
     """

@@ -1,6 +1,8 @@
 import os
 from datetime import timedelta
+from io import BytesIO
 
+import requests
 from dotenv import load_dotenv
 from minio import Minio
 from minio.error import S3Error
@@ -54,3 +56,14 @@ def get_pdf_url(object_name: str, expires_hours: int = 1) -> str:
 def delete_pdf(object_name: str) -> None:
     client = get_minio_client()
     client.remove_object(BUCKET_NAME, object_name)
+
+
+def upload_pdf_from_url(article_id: str, source: str, pdf_url: str) -> tuple[str, int]:
+    """Download a PDF from a URL and upload it directly to MinIO. Returns (object_name, size_bytes)."""
+    r = requests.get(pdf_url, timeout=30, headers={"User-Agent": "IntelliCorpus/1.0"})
+    r.raise_for_status()
+    pdf_bytes = r.content
+    object_name = f"{source}/{article_id}.pdf"
+    client = get_minio_client()
+    client.put_object(BUCKET_NAME, object_name, BytesIO(pdf_bytes), length=len(pdf_bytes), content_type="application/pdf")
+    return object_name, len(pdf_bytes)
