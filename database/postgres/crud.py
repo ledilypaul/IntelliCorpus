@@ -37,12 +37,13 @@ def get_articles_without_pdf(engine, table: Table) -> list[dict]:
         return conn.execute(stmt).mappings().all()
 
 
-def update_pdf_fields(engine, table: Table, article_id: str, minio_path: str | None, pdf_status: str, pdf_size_bytes: int = None) -> None:
+def update_pdf_fields(engine, table: Table, article_id: str, minio_path: str | None, pdf_status: str, pdf_size_bytes: int = None, pdf_sha256: str = None ) -> None:
     with engine.begin() as conn:
         stmt = update(table).where(table.c.id == article_id).values(
             minio_path=minio_path,
             pdf_status=pdf_status,
             pdf_downloaded_at=datetime.now(timezone.utc),
             pdf_size_bytes=pdf_size_bytes,
+            pdf_sha256=pdf_sha256
         )
         conn.execute(stmt)
