@@ -1,6 +1,6 @@
 services:
   intellicorpus_db:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     container_name: intellicorpus_postgres
     restart: always
     environment:
