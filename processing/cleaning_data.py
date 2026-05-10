@@ -13,12 +13,16 @@ def add_source_columns(df: pl.DataFrame, source_name: str) -> pl.DataFrame:
         return df.with_columns(pl.lit(source_name).alias("source"))
     return df
 
-def format_date_columns(df: pl.DataFrame, date_columns: list[str]) -> pl.DataFrame:
+def format_date_columns(df : pl.DataFrame, date_columns : list[str], date_format="%Y-%m-%dT%H:%M:%SZ"):
     if date_columns:
         for col_name in date_columns:
             if col_name in df.columns:
                 df = df.with_columns(
-                    pl.col(col_name).str.to_datetime(strict=False, time_unit="us").alias(col_name)
+                    pl.col(col_name).str.to_datetime(
+                        format=date_format,
+                        strict=False,
+                        time_unit="us"
+                    ).alias(col_name)
                 )
     return df
 

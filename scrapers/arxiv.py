@@ -11,7 +11,7 @@ def parser_arxiv(raw_result : str):
             "published_at": e.get("published"),
             "updated": e.get("updated"),
             "authors": [a.name for a in e.get("authors", [])],
-            "pdf_url": next((link.href + ".pdf" for link in e.links if link.type == "application/pdf"), None),
+            "pdf_url": next((link.href for link in e.links if link.type == "application/pdf"), None),
             "source": "arxiv"
         })
     return results

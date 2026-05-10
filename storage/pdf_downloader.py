@@ -1,4 +1,5 @@
 import hashlib
+import time
 from datetime import datetime
 from io import BytesIO
 
@@ -32,14 +33,16 @@ def _fetch_pdf_bytes(pdf_url: str) -> bytes:
     # Retry : 3 tentatives, sur les erreurs 500/502/503/504, avec backoff (attend 1s, 2s, 4s entre chaque essai)
     retry_strategy = Retry(
         total=3,
-        backoff_factor=1,
-        status_forcelist=[500, 502, 503, 504],
+        backoff_factor=2, # 2s, 4s, 8s
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET"],
+        raise_on_status=False
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session = requests.Session()
     session.mount("https://", adapter)
 
-    r = session.get(pdf_url, timeout=30, headers={"User-Agent": "IntelliCorpus/1.0"})
+    r = session.get(pdf_url, timeout=60, headers={"User-Agent": "IntelliCorpus/1.0"})
     r.raise_for_status()
 
     # Vérifie que le serveur renvoie bien un PDF et non une page HTML
@@ -48,7 +51,10 @@ def _fetch_pdf_bytes(pdf_url: str) -> bytes:
     if "pdf" not in content_type:
         raise ValueError(f"Content-Type inattendu '{content_type}' pour {pdf_url}")
 
-    return r.content
+    chunks = []
+    for chunk in r.iter_content(chunk_size=8192):
+        chunks.append(chunk)
+    return b"".join(chunks)
 
 
 def _compute_sha256(pdf_bytes: bytes) -> str:
@@ -97,9 +103,16 @@ def download_and_store(article: dict, engine, table) -> None:
 def run_pdf_pipeline(engine, table) -> None:
     articles = get_articles_without_pdf(engine, table)
     print(f"{len(articles)} PDFs à télécharger...")
-    for article in articles:
+    for i, article in enumerate(articles):
         try:
             download_and_store(article, engine, table)
+        except ValueError as e:
+            # Content-Type pas PDF → article sans PDF accessible
+            update_pdf_fields(engine, table, article["id"], None, "unavailable")
+            print(f"  UNAVAILABLE {article['id']}: {e}")
         except Exception as e:
+            # Timeout, erreur réseau, etc. → retry possible plus tard
             update_pdf_fields(engine, table, article["id"], None, "failed")
             print(f"  FAILED {article['id']}: {e}")
+        if i < len(articles) - 1:    # pas de sleep après le dernier
+            time.sleep(3)
