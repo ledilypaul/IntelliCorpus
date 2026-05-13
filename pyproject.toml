@@ -13,6 +13,7 @@ dependencies = [
     "pgvector>=0.4.2",
     "polars>=1.40.1",
     "psycopg2-binary>=2.9.12",
+    "pymupdf>=1.27.2.3",
     "python-dotenv>=1.2.2",
     "requests>=2.34.0",
     "sqlalchemy>=2.0.49",
