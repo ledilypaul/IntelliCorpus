@@ -1,0 +1,20 @@
+[project]
+name = "intellicorpus"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "feedparser>=6.0.12",
+    "google-api-python-client>=2.196.0",
+    "google-auth>=2.52.0",
+    "lxml>=6.1.0",
+    "minio>=7.2.20",
+    "pgvector>=0.4.2",
+    "polars>=1.40.1",
+    "psycopg2-binary>=2.9.12",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.0",
+    "sqlalchemy>=2.0.49",
+    "xmltodict>=1.0.4",
+]
