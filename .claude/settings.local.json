@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E '\\\\.\\(py|sql|yml|yaml|toml|cfg\\)$')",
+      "Bash(pip list *)",
+      "Bash(.venv/bin/pip install *)",
+      "Bash(.venv/bin/python *)",
+      "Bash(pyenv activate *)",
+      "Bash(pip install *)",
+      "Bash(pyenv exec *)"
+    ]
+  }
+}

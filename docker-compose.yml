@@ -1,6 +1,6 @@
 services:
   intellicorpus_db:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     container_name: intellicorpus_postgres
     restart: always
     environment:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
       TZ: Europe/Paris
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - intellicorpus_postgres_data:/var/lib/postgresql/data
 
