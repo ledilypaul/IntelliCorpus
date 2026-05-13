@@ -4,8 +4,8 @@ load_dotenv()
 from config.db_engine import get_db_engine
 from config_info import APIS
 from database.postgres.crud import get_articles_without_pdf, update_pdf_fields, upsert_data
-from database.postgres.init_db import init_schemas
-from models.postgres.corpus_schema import document_table, metadata
+from database.postgres.init_db import init_extensions, init_indexes, init_schemas
+from models.postgres.corpus_schema import document_table, chunk_table, metadata
 from processing.cleaning_data import normalize_data
 from scrapers.arxiv import parser_arxiv
 from scrapers.basic_fetching import fetch_raw
@@ -13,8 +13,10 @@ from storage.minio_client import upload_pdf_from_url
 
 
 def init_db(engine):
+    init_extensions(engine)
     init_schemas(engine)
     metadata.create_all(engine)
+    init_indexes(engine)
 
 
 def scraping_data(engine, search_key, quantity):
@@ -45,6 +47,6 @@ def download_pdfs(engine):
 
 if __name__ == "__main__":
     engine = get_db_engine()
-    # init_db(engine)
-    # scraping_data(engine, "Artificial Intelligence NLP", 10)
+    init_db(engine)
+    scraping_data(engine, "Artificial Intelligence NLP", 10)
     download_pdfs(engine)
