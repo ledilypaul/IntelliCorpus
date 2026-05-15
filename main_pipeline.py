@@ -44,9 +44,42 @@ def download_pdfs(engine):
             update_pdf_fields(engine, document_table, article["id"], None, "failed")
             print(f"  FAILED {article['id']}: {e}")
 
-
-if __name__ == "__main__":
+def inspect_documents(columns: list[str] = None):
+    import polars as pl
+    from sqlalchemy import select
     engine = get_db_engine()
-    init_db(engine)
-    scraping_data(engine, "Artificial Intelligence NLP", 10)
-    download_pdfs(engine)
+    with engine.connect() as conn:
+        if columns:
+            cols = [document_table.c[col] for col in columns]
+            stmt = select(*cols)
+        else:
+            stmt = select(document_table)
+        result = conn.execute(stmt).mappings().all()
+    df = pl.DataFrame([dict(r) for r in result])
+    return df
+
+def test_pdf_extractor():
+    import polars as pl
+    from storage.minio_client import get_minio_client, object_exists, BUCKET_NAME
+    from ai_pipelines.pdf_extractor import download_pdf_bytes, extract_text_from_pdf
+    df = inspect_documents(columns=["id", "title", "minio_path"])
+    first = df.filter(pl.col("minio_path").is_not_null()).row(0, named=True)
+    print(f"Testing: {first['title'][:60]}")
+
+    #Testing PDF Extractor functions
+    pdf_file = download_pdf_bytes(first["minio_path"])
+    pdf_data = extract_text_from_pdf(pdf_file)
+    print(pdf_data["metadata"])
+    print(pdf_data["pages"][0]["text"][:500])
+    import json
+    pdf_data = {'pdf_data': pdf_data}
+
+    with open('file.txt', 'w') as file:
+        file.write(json.dumps(pdf_data)) 
+    
+if __name__ == "__main__":
+    # engine = get_db_engine()
+    # init_db(engine)
+    # scraping_data(engine, "Artificial Intelligence NLP", 10)
+    # download_pdfs(engine)
+    test_pdf_extractor()

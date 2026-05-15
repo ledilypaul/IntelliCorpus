@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dotenv>=0.9.9",
     "feedparser>=6.0.12",
     "google-api-python-client>=2.196.0",
     "google-auth>=2.52.0",

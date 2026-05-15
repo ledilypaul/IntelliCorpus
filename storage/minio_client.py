@@ -66,7 +66,7 @@ def upload_pdf_from_url(article_id: str, source: str, pdf_url: str) -> tuple[str
     now = datetime.now()
     YYYY = now.strftime("%Y")
     MM = now.strftime("%m")
-    object_name = f"{source}/{YYYY}/{MM}/{article_id}.pdf"
+    object_name = f"{source.lower()}/{YYYY}/{MM}/{article_id}.pdf"
     client = get_minio_client()
     client.put_object(BUCKET_NAME, object_name, BytesIO(pdf_bytes), length=len(pdf_bytes), content_type="application/pdf")
     return object_name, len(pdf_bytes)
