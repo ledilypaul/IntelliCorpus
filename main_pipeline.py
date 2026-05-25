@@ -99,4 +99,5 @@ if __name__ == "__main__":
     # init_db(engine)
     # scraping_data(engine, "Artificial Intelligence NLP", 10)
     # download_pdfs(engine)
-    test_pdf_extractor()
+    from ai_pipelines.tokenizer import count_tokens, decode_tokens, encode_text
+    print(decode_tokens(encode_text("Bonjour tout le monde","cl100k_base")))
