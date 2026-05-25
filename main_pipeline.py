@@ -8,7 +8,7 @@ from ai_pipelines.pdf_extractor import download_pdf_bytes, extract_text_from_pdf
 from ai_pipelines.text_cleaner import clean_text, remove_repeated_headers_footers
 from config.db_engine import get_db_engine
 from config_info import APIS
-from database.postgres.crud import get_articles_without_pdf, update_pdf_fields, upsert_data
+from database.postgres.crud import get_articles_without_pdf, get_articles_with_pdf, update_pdf_fields, upsert_data
 from database.postgres.init_db import init_extensions, init_indexes, init_schemas
 from models.postgres.corpus_schema import document_table, chunk_table, metadata
 from processing.cleaning_data import normalize_data
