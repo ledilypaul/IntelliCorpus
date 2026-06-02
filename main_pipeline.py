@@ -4,6 +4,7 @@ load_dotenv()
 import polars as pl
 from sqlalchemy import select
 
+from ai_pipelines.chunker import split_text
 from ai_pipelines.pdf_extractor import download_pdf_bytes, extract_text_from_pdf
 from ai_pipelines.text_cleaner import clean_text, remove_repeated_headers_footers
 from config.db_engine import get_db_engine
@@ -83,16 +84,28 @@ def extract_and_clean_pdf(minio_path: str) -> list[str]:
 
 
 def test_pdf_extractor():
-    """Pick the first document with a stored PDF and print its cleaned text page by page."""
+    """Pick the first document with a stored PDF, print cleaned pages then test chunking."""
     df = inspect_documents(columns=["id", "title", "minio_path"])
     doc = df.filter(pl.col("minio_path").is_not_null()).row(0, named=True)
     print(f"Document: {doc['title']}")
 
     cleaned_pages = extract_and_clean_pdf(doc["minio_path"])
 
-    for i, page in enumerate(cleaned_pages, start=1):
-        print(f"\n--- Page {i} ---")
-        print(page)
+    # for i, page in enumerate(cleaned_pages, start=1):
+    #     print(f"\n--- Page {i} ---")
+    #     print(page)
+
+    # --- Test chunker ---
+    full_text = "\n\n".join(cleaned_pages)
+    chunks = split_text(full_text)
+
+    print("\n=== Chunking result ===")
+    print(f"Total chunks: {len(chunks)}")
+    for i, chunk in enumerate(chunks, start=1):
+        from ai_pipelines.tokenizer import count_tokens
+        n_tokens = count_tokens(chunk, "cl100k_base")
+        print(f"\n-- Chunk {i} ({n_tokens} tokens) --")
+        print(chunk[:200], "..." if len(chunk) > 200 else "")
     
 if __name__ == "__main__":
     # engine = get_db_engine()
@@ -101,3 +114,4 @@ if __name__ == "__main__":
     # download_pdfs(engine)
     from ai_pipelines.tokenizer import count_tokens, decode_tokens, encode_text
     print(decode_tokens(encode_text("Bonjour tout le monde","cl100k_base")))
+    test_pdf_extractor()
