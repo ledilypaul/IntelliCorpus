@@ -19,5 +19,11 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "requests>=2.34.0",
     "sqlalchemy>=2.0.49",
+    "tiktoken>=0.7.0",
     "xmltodict>=1.0.4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.0",
 ]

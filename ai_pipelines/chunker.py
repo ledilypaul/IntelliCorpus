@@ -2,6 +2,7 @@ from ai_pipelines.tokenizer import count_tokens, encode_text, decode_tokens
 
 SEPARATORS = ["\n\n", "\n", ".", " "]
 CHUNK_SIZE = 800
+OVERLAP_SIZE = 150
 ENCODING_NAME = "cl100k_base"
 
 def _split_recursive(text: str, separators: list[str]) -> list[str]:
@@ -60,6 +61,23 @@ def _merge_small_chunks(chunks: list[str], separator: str = " ") -> list[str]:
     return merged
 
 
+def _add_overlap(chunks: list[str], overlap: int = OVERLAP_SIZE) -> list[str]:
+    """
+    Préfixe chaque chunk (à partir du 2e) avec les `overlap` derniers tokens
+    du chunk précédent, pour que le contexte ne soit pas coupé net.
+    """
+    if len(chunks) <= 1:
+        return chunks
+
+    result = [chunks[0]]
+    for i in range(1, len(chunks)):
+        prev_tokens = encode_text(chunks[i - 1], ENCODING_NAME)
+        tail_text = decode_tokens(prev_tokens[-overlap:], ENCODING_NAME)
+        result.append(tail_text + " " + chunks[i])
+
+    return result
+
+
 def split_text(text: str) -> list[str]:
     """Split un texte en chunks de 800 tokens.
 
@@ -71,4 +89,4 @@ def split_text(text: str) -> list[str]:
     """
     raw_chunks = _split_recursive(text, SEPARATORS)
     merged_chunks = _merge_small_chunks(raw_chunks)
-    return merged_chunks
+    return _add_overlap(merged_chunks)
