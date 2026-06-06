@@ -5,6 +5,7 @@ import polars as pl
 from sqlalchemy import select
 
 from ai_pipelines.chunker import split_text
+from ai_pipelines.embedders import embed_batch
 from ai_pipelines.pdf_extractor import download_pdf_bytes, extract_text_from_pdf
 from ai_pipelines.text_cleaner import clean_text, remove_repeated_headers_footers
 from config.db_engine import get_db_engine
@@ -106,7 +107,28 @@ def test_pdf_extractor():
         n_tokens = count_tokens(chunk, "cl100k_base")
         print(f"\n-- Chunk {i} ({n_tokens} tokens) --")
         print(chunk[:200], "..." if len(chunk) > 200 else "")
-    
+
+
+def test_embedder():
+    """Pick the first stored PDF, chunk it and embed all chunks via embed_batch."""
+    import math
+    df = inspect_documents(columns=["id", "title", "minio_path"])
+    doc = df.filter(pl.col("minio_path").is_not_null()).row(0, named=True)
+    print(f"Document: {doc['title']}")
+
+    cleaned_pages = extract_and_clean_pdf(doc["minio_path"])
+    full_text = "\n\n".join(cleaned_pages)
+    chunks = split_text(full_text)
+    print(f"Chunks: {len(chunks)}")
+
+    vectors = embed_batch(chunks)
+
+    print(f"Embedding dim : {len(vectors[0])}")
+    norms = [math.sqrt(sum(x ** 2 for x in v)) for v in vectors]
+    print(f"Norme moyenne : {sum(norms) / len(norms):.4f}")
+    print(f"Norme min/max : {min(norms):.4f} / {max(norms):.4f}")
+
+
 if __name__ == "__main__":
     # engine = get_db_engine()
     # init_db(engine)
