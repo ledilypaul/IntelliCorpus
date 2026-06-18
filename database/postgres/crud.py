@@ -39,9 +39,9 @@ def get_articles_without_pdf(engine, table: Table) -> list[dict]:
 def get_articles_with_pdf(engine, table: Table) -> list[dict]:
     with engine.connect() as conn:
         stmt = select(table).where(
-            table.c.minio_path == None,
-            table.c.pdf_url != None,
-            table.c.pdf_status == "downloaded"
+            table.c.minio_path != None,
+            table.c.pdf_status == "downloaded",
+            table.c.rag_status == "pending"
         )
         return conn.execute(stmt).mappings().all()
 
@@ -54,4 +54,10 @@ def update_pdf_fields(engine, table: Table, article_id: str, minio_path: str | N
             pdf_size_bytes=pdf_size_bytes,
             pdf_sha256=pdf_sha256
         )
+        conn.execute(stmt)
+
+
+def update_rag_status(engine, table: Table, article_id: str, rag_status: str) -> None:
+    with engine.begin() as conn:
+        stmt = update(table).where(table.c.id == article_id).values(rag_status=rag_status)
         conn.execute(stmt)
