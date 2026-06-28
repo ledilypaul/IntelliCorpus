@@ -6,12 +6,15 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "alembic>=1.18.4",
+    "anthropic>=0.112.0",
     "dotenv>=0.9.9",
     "feedparser>=6.0.12",
     "google-api-python-client>=2.196.0",
     "google-auth>=2.52.0",
+    "litellm>=1.90.0",
     "lxml>=6.1.0",
     "minio>=7.2.20",
+    "openai>=2.44.0",
     "pgvector>=0.4.2",
     "polars>=1.40.1",
     "psycopg2-binary>=2.9.12",

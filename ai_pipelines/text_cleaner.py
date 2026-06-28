@@ -86,6 +86,10 @@ def normalize_unicode(text: str) -> str:
     # Replace non-breaking spaces with regular spaces
     text = text.replace("\xa0", " ")
 
+    # Strip NUL bytes: some PDFs leak them during extraction, and
+    # PostgreSQL's text columns reject them outright on insert.
+    text = text.replace("\x00", "")
+
     return text
 
 def collapse_whitespace(text: str) -> str:

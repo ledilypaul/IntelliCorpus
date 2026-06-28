@@ -8,6 +8,7 @@ from ai_pipelines.chunker import split_text
 from ai_pipelines.embedders import embed_batch
 from ai_pipelines.pdf_extractor import download_pdf_bytes, extract_text_from_pdf
 from ai_pipelines.text_cleaner import clean_text, remove_repeated_headers_footers
+from ai_pipelines.rag import ask
 from config.db_engine import get_db_engine
 from config_info import APIS
 from database.postgres.crud import get_articles_without_pdf, get_articles_with_pdf, update_pdf_fields, upsert_data
@@ -17,7 +18,7 @@ from processing.cleaning_data import normalize_data
 from scrapers.arxiv import parser_arxiv
 from scrapers.basic_fetching import fetch_raw
 from storage.minio_client import upload_pdf_from_url
-
+from ai_pipelines.ingest import ingest_pending_documents, ingest_failed_documents
 
 def init_db(engine):
     """Initialize the database: extensions, schemas, tables and indexes."""
@@ -130,10 +131,10 @@ def test_embedder():
 
 
 if __name__ == "__main__":
-    # engine = get_db_engine()
+    engine = get_db_engine()
     # init_db(engine)
-    # scraping_data(engine, "Artificial Intelligence NLP", 10)
+    # scraping_data(engine, "Convutional Neural Network", 40)
     # download_pdfs(engine)
-    from ai_pipelines.tokenizer import count_tokens, decode_tokens, encode_text
-    print(decode_tokens(encode_text("Bonjour tout le monde","cl100k_base")))
-    test_pdf_extractor()
+    # ingest_pending_documents()
+    ingest_failed_documents()
+    # ask("Qu'est ce que l'IA agentique ?",top_k=10)

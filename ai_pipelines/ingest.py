@@ -45,11 +45,14 @@ def ingest_document(engine, document: dict) -> str:
     """
     extracted = extract_pdf(document["minio_path"])
     if extracted["status"] == "failed":
+        print(f"    extraction failed for {document['id']}: {extracted.get('error')}")
         update_rag_status(engine, document_table, document["id"], "failed")
         return "failed"
 
     chunks = split_text(extracted["cleaned_text"])
     if not chunks:
+        text_len = len(extracted["cleaned_text"])
+        print(f"    no chunks produced for {document['id']} (cleaned_text length={text_len})")
         update_rag_status(engine, document_table, document["id"], "failed")
         return "failed"
 
@@ -68,8 +71,35 @@ def ingest_pending_documents(engine=None) -> dict:
         dict with counts: {"embedded": int, "failed": int}.
     """
     engine = engine or get_db_engine()
-    documents = get_articles_with_pdf(engine, document_table)
+    documents = get_articles_with_pdf(engine, "pending",document_table)
     print(f"{len(documents)} documents to ingest...")
+
+    results = {"embedded": 0, "failed": 0}
+    for document in documents:
+        try:
+            status = ingest_document(engine, document)
+        except Exception as e:
+            update_rag_status(engine, document_table, document["id"], "failed")
+            status = "failed"
+            print(f"  FAILED {document['id']}: {e}")
+        else:
+            print(f"  {status.upper()} {document['title'][:60]}")
+        results[status] += 1
+
+    return results
+
+def ingest_failed_documents(engine=None) -> dict:
+    """Ingest all documents with pdf_status='downloaded' AND rag_status='failed'.
+
+    Args:
+        engine (_type_, optional): _description_. Defaults to None.
+
+    Returns:
+        dict: _description_
+    """
+    engine = engine or get_db_engine()
+    documents = get_articles_with_pdf(engine, "failed",document_table)
+    print(f"{len(documents)} documents to ingest")
 
     results = {"embedded": 0, "failed": 0}
     for document in documents:

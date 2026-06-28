@@ -59,7 +59,7 @@ def get_articles_without_pdf(engine, table: Table) -> list[dict]:
         )
         return conn.execute(stmt).mappings().all()
 
-def get_articles_with_pdf(engine, table: Table) -> list[dict]:
+def get_articles_with_pdf(engine, file_status,table: Table) -> list[dict]:
     """Fetch articles whose PDF is downloaded but not yet ingested into the RAG pipeline.
 
     Args:
@@ -74,7 +74,7 @@ def get_articles_with_pdf(engine, table: Table) -> list[dict]:
         stmt = select(table).where(
             table.c.minio_path != None,
             table.c.pdf_status == "downloaded",
-            table.c.rag_status == "pending"
+            table.c.rag_status == file_status
         )
         return conn.execute(stmt).mappings().all()
 

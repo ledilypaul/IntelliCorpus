@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, String, Text, DateTime, MetaData, JSON, BigInteger, Integer, ForeignKey, func
 from pgvector.sqlalchemy import Vector
 
-EMBEDDING_DIM = 384   # OpenAI text-embedding-3-small / ada-002
+EMBEDDING_DIM = 384   # sentence-transformers/all-MiniLM-L6-v2
 
 metadata = MetaData()
 
