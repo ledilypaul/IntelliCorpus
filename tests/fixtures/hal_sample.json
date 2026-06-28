@@ -1,0 +1,25 @@
+{
+  "response": {
+    "numFound": 2,
+    "docs": [
+      {
+        "docid": "hal-00000001",
+        "title_s": ["Sample HAL Title One"],
+        "abstract_s": ["This is the first sample HAL abstract."],
+        "publicationDate_s": "2021-01-01",
+        "authFullName_s": ["Jane Doe", "John Smith"],
+        "uri_s": "https://hal.science/hal-00000001",
+        "files_s": ["https://hal.science/hal-00000001/document"]
+      },
+      {
+        "docid": "hal-00000002",
+        "title_s": ["Sample HAL Title Two"],
+        "abstract_s": ["This is the second sample HAL abstract."],
+        "publicationDate_s": "2021-02-01",
+        "authFullName_s": ["Alice Martin"],
+        "uri_s": "https://hal.science/hal-00000002",
+        "files_s": []
+      }
+    ]
+  }
+}

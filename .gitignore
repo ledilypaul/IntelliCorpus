@@ -212,3 +212,4 @@ create_issue.sh
 data/minio/
 data/postgres/
 .python-version
+.claude

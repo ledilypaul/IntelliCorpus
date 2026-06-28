@@ -101,6 +101,8 @@ def fetch_pubmed(query: str, max_results: int = 200, batch_size: int = 100, dela
 def get_authors(authors_list):
     final_list = []
     authors = authors_list.get("Author",{})
+    if isinstance(authors, dict):
+        authors = [authors]
     for author in authors:
         forename = author.get("ForeName", "").strip()
         lastname = author.get("LastName", "").strip()

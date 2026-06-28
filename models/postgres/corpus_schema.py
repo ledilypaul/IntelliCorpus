@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, String, Text, DateTime, MetaData, JSON, BigInteger, Integer, ForeignKey, func
 from pgvector.sqlalchemy import Vector
 
-EMBEDDING_DIM = 1536  # OpenAI text-embedding-3-small / ada-002
+EMBEDDING_DIM = 384   # sentence-transformers/all-MiniLM-L6-v2
 
 metadata = MetaData()
 
@@ -23,8 +23,8 @@ document_table = Table(
     Column("pdf_size_bytes", BigInteger, nullable=True),
     Column("pdf_sha256", String, nullable=True),
     Column("rag_status", String, default="pending"),  # pending/chunked/embedded/failed
-    Column("created_at", DateTime, server_default=func.now()),
-    Column("updated_at", DateTime, onupdate=func.now()),
+    Column("created_at", DateTime, server_default=func.now()), # pylint: disable=not-callable
+    Column("updated_at", DateTime, onupdate=func.now()), # pylint: disable=not-callable
     schema='corpus'
 )
 
@@ -38,6 +38,6 @@ chunk_table = Table(
     Column("token_count", Integer),
     Column("embedding", Vector(EMBEDDING_DIM)),
     Column("section", String),
-    Column("created_at", DateTime, server_default=func.now()),
+    Column("created_at", DateTime, server_default=func.now()), # pylint: disable=not-callable
     schema='corpus'
 )
