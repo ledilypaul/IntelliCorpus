@@ -49,7 +49,21 @@ services:
     depends_on:
       - intellicorpus_db
 
+  intellicorpus_neo4j:
+    image: neo4j:5-community
+    container_name: intellicorpus_neo4j
+    restart: always
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
+      TZ: Europe/Paris
+    ports:
+      - "7474:7474"  # Neo4j Browser (UI web)
+      - "7687:7687"  # Bolt (driver Python)
+    volumes:
+      - intellicorpus_neo4j_data:/data
+
 volumes:
   intellicorpus_postgres_data:
   intellicorpus_minio_data:
   n8n_data:
+  intellicorpus_neo4j_data:

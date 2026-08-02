@@ -14,6 +14,7 @@ dependencies = [
     "litellm>=1.90.0",
     "lxml>=6.1.0",
     "minio>=7.2.20",
+    "neo4j>=6.2.0",
     "openai>=2.44.0",
     "pgvector>=0.4.2",
     "polars>=1.40.1",
